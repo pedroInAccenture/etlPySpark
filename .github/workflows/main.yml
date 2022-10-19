@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: qoqa/action-s3-cp@v1.1
+      - uses: tpaschalis/s3-sync-action@master
+        with:
+          args: --acl public-read
         env:
           AWS_S3_BUCKET: ${{ secrets.CHANGELOG_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.CHANGELOG_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.CHANGELOG_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-west-1'
-          AWS_S3_PATH: '/changelogs/CHANGELOG.android.md'
+          AWS_S3_PATH: '/files/main.py'
           FILE: 'main.py'
