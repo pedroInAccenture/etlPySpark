@@ -32,6 +32,7 @@ def calculate_pi(partitions, output_uri):
     :param output_uri: The URI where the output is written, typically an Amazon S3
                        bucket, such as 's3://example-bucket/pi-calc'.
     """
+
     def calculate_hit(_):
         x = random() * 2 - 1
         y = random() * 2 - 1
@@ -41,15 +42,15 @@ def calculate_pi(partitions, output_uri):
     logger.info(
         "Calculating pi with a total of %s tries in %s partitions.", tries, partitions)
     with SparkSession.builder.appName("My PyPi").getOrCreate() as spark:
-        hits = spark.sparkContext.parallelize(range(tries), partitions)\
-            .map(calculate_hit)\
+        hits = spark.sparkContext.parallelize(range(tries), partitions) \
+            .map(calculate_hit) \
             .reduce(add)
         pi = 4.0 * hits / tries
         logger.info("%s tries and %s hits gives pi estimate of %s.", tries, hits, pi)
-        if output_uri is not None:
-            df = spark.createDataFrame(
-                [(tries, hits, pi)], ['tries', 'hits', 'pi'])
-            df.write.mode('overwrite').json(output_uri)
+
+        df = spark.createDataFrame(
+            [(tries, hits, pi)], ['tries', 'hits', 'pi'])
+        df.write.mode('overwrite').json("s3://common.datalake/files/output/")
 
 
 if __name__ == "__main__":
